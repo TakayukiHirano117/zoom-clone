@@ -16,7 +16,8 @@ export function VideoTile({ participant }: VideoTileProps) {
         }}
         autoPlay
         playsInline
-        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+        muted
+        style={{ width: '100%', height: '100%', objectFit: 'cover', transform: "scaleX(-1)" }}
       ></video>
       <div className="participant-info">
         <span className="participant-name">{participant.name}</span>
