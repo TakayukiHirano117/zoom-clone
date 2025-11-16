@@ -30,6 +30,7 @@ const Signup = () => {
         email,
         password
       );
+      localStorage.setItem('token', token);
       setCurrentUser(user);
     } catch (error) {
       console.error(error);
@@ -84,7 +85,7 @@ const Signup = () => {
         </div>
 
         <div className="signup-links">
-          <Link to="" className="login-link">
+          <Link to="/login" className="login-link">
             既にアカウントをお持ちの場合
           </Link>
         </div>

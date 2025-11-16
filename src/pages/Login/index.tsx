@@ -23,6 +23,7 @@ function Login() {
     }
     try {
       const { user, token } = await authRepository.signin(email, password);
+      localStorage.setItem('token', token);
       setCurrentUser(user);
     } catch (error) {
       console.error(error);
@@ -68,7 +69,7 @@ function Login() {
         </div>
 
         <div className="login-links">
-          <Link to="" className="signup-link">
+          <Link to="/signup" className="signup-link">
             アカウント作成
           </Link>
         </div>
