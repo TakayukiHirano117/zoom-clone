@@ -7,6 +7,8 @@ export interface Participant {
   id: string;
   name: string;
   stream: MediaStream | null;
+  cameraOn: boolean;
+  voiceOn: boolean;
 }
 
 export const useMeeting = () => {
@@ -16,6 +18,8 @@ export const useMeeting = () => {
     id: currentUser!.id,
     name: currentUser!.name,
     stream: null,
+    cameraOn: true,
+    voiceOn: true,
   });
 
   useEffect(() => {
@@ -33,5 +37,31 @@ export const useMeeting = () => {
     setLocalStreams((prev) => [...prev, stream]);
   };
 
-  return { me, getStream };
+  const toggleVideo = () => {
+    let cameraOn = false;
+    const localStream = me.stream;
+    if (localStream != null) {
+      const videoTracks = localStream.getVideoTracks();
+      videoTracks.forEach((track) => {
+        track.enabled = !track.enabled;
+      });
+      cameraOn = videoTracks[0]?.enabled;
+    }
+    setMe((prev) => ({ ...prev, cameraOn }));
+  };
+
+  const toggleVoice = () => {
+    let voiceOn = false;
+    const localStream = me.stream;
+    if (localStream != null) {
+      const audioTracks = localStream.getAudioTracks();
+      audioTracks.forEach((track) => {
+        track.enabled = !track.enabled;
+      });
+      voiceOn = audioTracks[0]?.enabled;
+    }
+    setMe((prev) => ({ ...prev, voiceOn }));
+  };
+
+  return { me, getStream, toggleVideo, toggleVoice };
 };

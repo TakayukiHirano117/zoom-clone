@@ -2,7 +2,7 @@ import { FiMessageCircle, FiPhone, FiCopy } from 'react-icons/fi';
 import './Meeting.css';
 import { VideoTile } from './VideoTile';
 import { MediaControls } from './MediaControls';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { meetingRepository } from '../../modules/meetings/meeting.repository';
 import { useEffect, useState } from 'react';
 import { PreviewMedia } from './PreviewMedia';
@@ -11,7 +11,9 @@ import { useMeeting } from '../../modules/meetings/meeting.hook';
 function Meeting() {
   const { id } = useParams();
   const [showPreview, setShowPreview] = useState(true);
-  const { me, getStream } = useMeeting();
+  const { me, getStream, toggleVideo, toggleVoice } = useMeeting();
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (id) {
@@ -23,12 +25,31 @@ function Meeting() {
     try {
       await meetingRepository.joinMeeting(id!);
       getStream();
+      setIsLoading(false);
     } catch (error) {
       console.error(error);
     }
   };
 
-  if (showPreview) return <PreviewMedia participant={me} />;
+  const joinMeeting = async () => {
+    setShowPreview(false);
+  };
+
+  const leaveMeeting = async () => {
+    navigate('/');
+  };
+
+  if (showPreview)
+    return (
+      <PreviewMedia
+        isLoading={isLoading}
+        participant={me}
+        onToggleVideo={toggleVideo}
+        onToggleVoice={toggleVoice}
+        onJoin={joinMeeting}
+        onCancel={leaveMeeting}
+      />
+    );
 
   return (
     <div className="meeting-container">
@@ -40,7 +61,12 @@ function Meeting() {
       </div>
 
       <div className="control-bar">
-        <MediaControls />
+        <MediaControls
+          cameraOn={me.cameraOn}
+          voiceOn={me.voiceOn}
+          onToggleVideo={toggleVideo}
+          onToggleVoice={toggleVoice}
+        />
 
         <button className="control-button">
           <FiMessageCircle />
