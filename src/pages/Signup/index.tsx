@@ -1,38 +1,40 @@
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import './Signup.css';
 import { useState } from 'react';
 import { authRepository } from '../../modules/auth/auth.repository';
+import { useAtom } from 'jotai';
+import { currentUserAtom } from '../../modules/auth/current-user.state';
 
 const Signup = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
+
+  if (currentUser) {
+    return <Navigate to="/" />;
+  }
 
   const signup = async () => {
     setIsLoading(true);
+
     if (!name || !email || !password) {
       setIsLoading(false);
       return;
     }
+
     try {
       const { user, token } = await authRepository.signup(
         name,
         email,
         password
       );
-      console.log(user, token);
+      setCurrentUser(user);
     } catch (error) {
       console.error(error);
     } finally {
       setIsLoading(false);
-
-      const { user, token } = await authRepository.signup(
-        name,
-        email,
-        password
-      );
-      console.log(user, token);
     }
   };
 
