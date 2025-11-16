@@ -3,6 +3,8 @@ import { FiVideo, FiUser, FiSettings, FiLogOut } from 'react-icons/fi';
 import './Home.css';
 import { useAtom } from 'jotai';
 import { currentUserAtom } from '../../modules/auth/current-user.state';
+import { useNavigate } from 'react-router-dom';
+import { meetingRepository } from '../../modules/meetings/meeting.repository';
 
 function Home() {
   const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
@@ -11,6 +13,16 @@ function Home() {
     localStorage.removeItem('token');
     setCurrentUser(undefined);
   };
+
+  const navigate = useNavigate();
+  const startMeeting = async () => {
+    try {
+      const { meetingId } = await meetingRepository.createMeeting();
+      navigate(`/meetings/${meetingId}`);
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   return (
     <div className="home-container">
@@ -36,7 +48,7 @@ function Home() {
               <FiVideo />
             </div>
             <h3>新しいミーティング</h3>
-            <button className="start-meeting-button">ミーティングを開始</button>
+            <button className="start-meeting-button" onClick={startMeeting}>ミーティングを開始</button>
           </div>
 
           <div className="meeting-card">
